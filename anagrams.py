@@ -1,8 +1,15 @@
 #!/usr/bin/python3
 import sys
+from db import DataSource
 # from db import AnagramsDao, WordsDao, DataSource, init_words
 
 WORDS_FILE = '/usr/share/dict/words'
+
+def load_words(word_list):
+    ds = DataSource()
+    cursor = ds.cursor
+    cursor.executemany('insert into words (word) values (?)', word_list)
+    ds.conn.commit()
 
 # class Anagrams:
 #     def __init__(self, anagrams_dao, words_dao):
@@ -33,12 +40,14 @@ if __name__ == '__main__':
     words = []
     with open(WORDS_FILE, 'r') as lines:
         for line in lines:
-            words.append(line.strip())
-
-    if len(sys.argv) > 1:
-        in_word = sys.argv[1].strip()
-    else:
-        in_word = input("Enter a word: ").strip()
+            word = line.strip()
+            words.append((word,))
     
-    anagrams = find_anagrams(in_word, words)
-    print(anagrams if anagrams else f"No anagrams found for word {in_word}")
+    load_words(words)
+    # if len(sys.argv) > 1:
+    #     in_word = sys.argv[1].strip()
+    # else:
+    #     in_word = input("Enter a word: ").strip()
+    
+    # anagrams = find_anagrams(in_word, words)
+    # print(anagrams if anagrams else f"No anagrams found for word {in_word}")
