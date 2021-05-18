@@ -44,10 +44,3 @@ class WordsDao:
     def find(self, word):
         self.cursor.execute('select id, word from words where word = ?', (word,))
         return self.cursor.fetchone()
-
-def init_words(words, ds):
-    ds.cursor.executemany('insert into words (word) values (?)', iter(words))
-
-if __name__ == '__main__':
-    ds = DataSource()
-
