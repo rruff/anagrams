@@ -1,8 +1,5 @@
 import sqlite3
 
-DB = 'db/anagrams.db'
-CREATE_DB_SCRIPT = 'db/anagrams.sql'
-
 class AnagramsDao:
     def __init__(self, ds):
         self.ds = ds

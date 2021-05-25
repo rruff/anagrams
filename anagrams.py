@@ -14,18 +14,19 @@ def load_words():
     with open(WORDS_FILE) as f:
         words = set(f.read().split())
     
-    words_dict = {}
-    for w in words:
-        key = sort_chars(w)
-        if key in words_dict:
-            words_dict[key].append(w)
-        else:
-            words_dict[key] = [w]
+    # words_dict = {}
+    # for w in words:
+    #     key = sort_chars(w)
+    #     if key in words_dict:
+    #         words_dict[key].append(w)
+    #     else:
+    #         words_dict[key] = [w]
     
-    return words_dict
+    return [(w, sort_chars(w)) for w in words]
 
-# def insert_words(conn, words_dict):
-#     words_dao = WordsDao(conn)
+def insert_words(conn, words):
+    words_dao = WordsDao(conn)
+    words_dao.insert_words(words)
 
 def find_anagrams(word, word_dict):
     anagrams = []
@@ -43,6 +44,8 @@ if __name__ == '__main__':
     init_db(conn)
 
     english_words = load_words()
+    # Flatten the values into a single list of words
+    insert_words(conn, [w for l in english_words.values() for w in l])
     # words = {}
     # with open(WORDS_FILE, 'r') as lines:
     #     for line in lines:
