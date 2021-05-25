@@ -1,6 +1,8 @@
 # SQLite database files
 *.db
 
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

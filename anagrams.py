@@ -1,35 +1,37 @@
 #!/usr/bin/python3
-import sys
-from db import DataSource
-# from db import AnagramsDao, WordsDao, DataSource, init_words
+import sqlite3
+from db import WordsDao
 
-WORDS_FILE = '/usr/share/dict/words'
+DB = 'db/anagrams.db'
+CREATE_DB_SCRIPT = 'db/anagrams.sql'
+WORDS_FILE = 'data/words_alpha.txt'
 
-def load_words(word_list):
-    ds = DataSource()
-    cursor = ds.cursor
-    cursor.executemany('insert into words (word) values (?)', word_list)
-    ds.conn.commit()
+def init_db(conn):
+    with open(CREATE_DB_SCRIPT) as sql:
+        conn.cursor().executescript(sql.read())
 
-# class Anagrams:
-#     def __init__(self, anagrams_dao, words_dao):
-#         self.anagrams_dao = anagrams_dao
-#         self.words_dao = words_dao
+def load_words():
+    with open(WORDS_FILE) as f:
+        words = set(f.read().split())
     
-#     def add(self, word, anagrams):
-#         found = self.words_dao.find(word)
-#         word_id, word = found if found else self.words_dao.insert_word(word)
-#         self.anagrams_dao.insert_anagrams(word_id, anagrams)
+    words_dict = {}
+    for w in words:
+        key = sort_chars(w)
+        if key in words_dict:
+            words_dict[key].append(w)
+        else:
+            words_dict[key] = [w]
     
-#     def find(self, word):
-#         return self.anagrams_dao.find_all_by_word(word)
+    return words_dict
 
-def find_anagrams(word, word_list):
+# def insert_words(conn, words_dict):
+#     words_dao = WordsDao(conn)
+
+def find_anagrams(word, word_dict):
     anagrams = []
-    chars = sort_chars(word)
-    for w in word_list:
-        if sort_chars(w) == chars and w != word:
-            anagrams.append(w)
+    chars = sort_chars(word).lower()
+    words = word_dict.setdefault(chars, [])
+    anagrams.extend([w for w in words if w != word])
 
     return anagrams
 
@@ -37,17 +39,20 @@ def sort_chars(word):
     return ''.join(sorted(list(word)))
 
 if __name__ == '__main__':
-    words = []
-    with open(WORDS_FILE, 'r') as lines:
-        for line in lines:
-            word = line.strip()
-            words.append((word,))
+    conn = sqlite3.connect(DB)
+    init_db(conn)
+
+    english_words = load_words()
+    # words = {}
+    # with open(WORDS_FILE, 'r') as lines:
+    #     for line in lines:
+    #         word = line.strip()
+    #         sorted_chars = sort_chars(word.lower())
+    #         if not sorted_chars in words:
+    #             words[sorted_chars] = [word]
+    #         else:
+    #             words[sorted_chars].append(word)
     
-    load_words(words)
-    # if len(sys.argv) > 1:
-    #     in_word = sys.argv[1].strip()
-    # else:
-    #     in_word = input("Enter a word: ").strip()
-    
-    # anagrams = find_anagrams(in_word, words)
-    # print(anagrams if anagrams else f"No anagrams found for word {in_word}")
+    # load_words(words)
+    # w = input("Enter a word: ").strip()
+    # print(find_anagrams(w, words))

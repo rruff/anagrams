@@ -3,8 +3,8 @@ create table if not exists words (
     word text not null
 );
 
-create table if not exists anagrams (
-    id integer primary key,
+-- Match words to their anagrams by doing a many-to-many self-join --
+create table if not exists word_anagrams_join (
     word_id integer not null,
-    anagram text not null
+    anagram_word_id integer not null
 );
