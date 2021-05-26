@@ -19,14 +19,7 @@ class WordsDao:
     def __init__(self, conn):
         self.conn = conn
         self.cursor = conn.cursor()
-        
-    # def insert_anagrams(self, word_id, anagrams):
 
-    def insert_word(self, word):
-        result = self.cursor.execute('insert into words (word) values (?)', (word,))
-        self.conn.commit()
-        return result
-    
     def insert_words(self, words):
         """ Accepts a list of words and inserts them into the database. """
         # `executemany` expects a sequence of tuples, so map each word to a single item tuple.
