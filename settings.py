@@ -8,4 +8,5 @@ WORDS_FILE = os.path.join(DATA_DIR, 'words_alpha.txt')
 DATABASE = os.path.join(DATA_DIR, 'anagrams.db')
 
 SQL_DIR = os.path.join(BASE_DIR, 'sql')
-CREATE_DB = os.path.join(SQL_DIR, 'create.sql')
+CREATE_DATABASE = os.path.join(SQL_DIR, 'create.sql')
+DROP_TABLES = os.path.join(SQL_DIR, 'drop.sql')

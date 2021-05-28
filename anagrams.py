@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 from settings import DATABASE
+from utils import sort_chars
 import sqlite3
 import sys
 
@@ -7,15 +10,15 @@ class Anagrams:
         self.conn = conn
     
     def find(self, word):
+        """ Find anagrams for `word`. """
         try:
             with self.conn as c:
-                chars = ''.join(sorted(list(word)))
-                cur = c.execute('select word from words where sortedword = (?) and word != ?', (chars, word))
+                cur = c.execute('select word from words where sortedword = (?) and word != (?)', (sort_chars(word), word))
                 anagrams = []
                 results = cur.fetchmany()
                 while results:
                     for a in results:
-                        anagrams.append(a)
+                        anagrams.extend(a)
                     results = cur.fetchmany()
         except sqlite3.DatabaseError as e:
             print(f'Database error: {e}')
