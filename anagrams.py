@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from settings import DATABASE, DATA_DIR
+from settings import DATABASE
 from utils import sort_chars
 import sqlite3
 import sys
 
 class Anagrams:
-    def __init__(self, conn=sqlite3.connect(DATA_DIR)):
+    def __init__(self, conn=sqlite3.connect(DATABASE)):
         self._conn = conn
     
     def __del__(self):
@@ -34,7 +34,7 @@ class Anagrams:
 
         return anagrams
 
-def main():
+if __name__ == '__main__':
     finder = Anagrams()
 
     word = sys.argv[1]
@@ -45,6 +45,3 @@ def main():
         print(*anagrams)
     else:
         print(f'No anagrams found for {word}')
-
-if __name__ == '__main__':
-    main()
