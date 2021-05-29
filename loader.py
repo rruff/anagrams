@@ -5,10 +5,9 @@ from settings import CREATE_DATABASE, DATABASE, WORDS_FILE
 from utils import sort_chars
 
 class AnagramsLoader:
-    """ Pre-load words and their anagrams into a SQLite database for easy queries. """
+    """ Pre-loads words and their anagrams into a SQLite database for easy queries. """
     def __init__(self, connection):
         self.conn = connection
-        self.cursor = self.conn.cursor()
         self._init_db()
 
     def _init_db(self):
@@ -17,11 +16,12 @@ class AnagramsLoader:
                 c.executescript(sql.read())
 
     def load_words(self):
-        """ Load the words from `WORDS_FILE` into memory and then insert into the DB. """
+        """ Load the words from `WORDS_FILE` into the database. """
         with open(WORDS_FILE) as f:
             # Read the words into a list of tuples, each containing the original word and
             # the word with its characters sorted alphabetically, e.g. ('xenomorphic', 'cehimnooprx').
-            words = [(w, sort_chars(w.lower())) for w in f.read().split()]
+            reader = (line.strip() for line in f)
+            words = [(w, sort_chars(w.lower())) for w in reader]
 
         self._insert_words(words)
     
@@ -33,7 +33,9 @@ class AnagramsLoader:
             print(f'Database error {e}')
 
 if __name__ == '__main__':
-    conn = sqlite3.connect(DATABASE)
-    aloader = AnagramsLoader(conn)
-    aloader.load_words()
-    conn.close()
+    try:
+        conn = sqlite3.connect(DATABASE)
+        aloader = AnagramsLoader(conn)
+        aloader.load_words()
+    finally:
+        conn.close()
