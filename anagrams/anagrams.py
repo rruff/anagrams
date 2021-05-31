@@ -42,6 +42,6 @@ if __name__ == '__main__':
 
     if anagrams:
         print(f'Anagrams for {word}:')
-        print(*anagrams)
+        print('\n'.join(anagrams))
     else:
         print(f'No anagrams found for {word}')

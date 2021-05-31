@@ -1,23 +1,18 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import sqlite3
-from settings import CREATE_DATABASE, DATABASE, WORDS_FILE
+from settings import DATABASE, WORDS_FILE
 from utils import sort_chars
 
 class AnagramsLoader:
     """ Pre-loads words and their anagrams into a SQLite database for easy queries. """
-    def __init__(self, connection):
-        self.conn = connection
-        self._init_db()
-
-    def _init_db(self):
-        with open(CREATE_DATABASE) as sql:
-            with self.conn as c:
-                c.executescript(sql.read())
+    def __init__(self, connection, words_file=WORDS_FILE):
+        self._conn = connection
+        self.words_file = words_file
 
     def load_words(self):
         """ Load the words from `WORDS_FILE` into the database. """
-        with open(WORDS_FILE) as f:
+        with open(self.words_file) as f:
             # Read the words into a list of tuples, each containing the original word and
             # the word with its characters sorted alphabetically, e.g. ('xenomorphic', 'cehimnooprx').
             reader = (line.strip() for line in f)
@@ -27,7 +22,7 @@ class AnagramsLoader:
     
     def _insert_words(self, words):
         try:
-            with self.conn as c:
+            with self._conn as c:
                 c.executemany('insert into words (word, sortedword) values (?, ?)', words)
         except sqlite3.DatabaseError as e:
             print(f'Database error {e}')
